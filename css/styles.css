@@ -84,7 +84,7 @@ button{
     text-wrap: balance;
 }
 
-.footer-bar{
+.diff-bar{
     align-content: start;
     align-items: center;
 }
@@ -115,4 +115,25 @@ td,th,tr{
     padding: 0;
     font-size: 20px;
     line-height: 0px;
+}
+
+
+.footer{
+    margin-top: 20%;
+}
+
+p{
+    color:#00F;
+    font-size: min(20vw,15px);
+    -webkit-text-stroke-width: 0px;
+}
+
+img{
+    object-fit: fill;
+    max-width: 100%; /* Ensures the image doesn't exceed the cell's width */
+    height: auto;    /* Maintains the aspect ratio */
+    display: block;  /* Removes extra space below the image */
+    height: 100%;
+    background-position : center;
+    background-attachment : fixed;
 }

@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 
-<html>
+<html oncontextmenu="return false;">
 
 <head>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -11,6 +11,7 @@
 </head>
 
 <body onload="onInit(4,2)">
+    
     <div class="frame">
         <h1>MINE SWEEPER</h1>
         <div class="header-bar">
@@ -21,11 +22,14 @@
         <table class="game-board">
 
         </table>
-        <div class="footer-bar">
+        <div class="diff-bar">
             <button class="difficulty-btn" onclick="onInit(4,2)">4x4</button>
             <button class="difficulty-btn" onclick="onInit(8,14)">8x8</button>
             <button class="difficulty-btn" onclick="onInit(12,32)">12x12</button>
             <button class="difficulty-btn" onclick="onInit(prompt('Enter size:'),prompt('Enter mines:'))">Custom</button>
+        </div>
+        <div class="footer">
+            <p>© Doron Kudra</p>
         </div>
     </div>
     <script src="js/game.js"></script>

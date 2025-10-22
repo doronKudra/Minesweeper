@@ -5,11 +5,10 @@ var gBoard = []
 var gEmptyCoords
 var isFirstMove
 var gGame
-
-
-
+var gLife
 
 function onInit(size,mines) {
+    gLife = 3
     isFirstMove = true
     setGame()
     setLevel(size, mines)
@@ -18,7 +17,7 @@ function onInit(size,mines) {
     renderBoard(gBoard)
 }
 
-function clickedCell(pos) {
+function onCellClicked(pos) {
     if (isFirstMove) {
         setMines(pos)
         isFirstMove = false
@@ -27,8 +26,13 @@ function clickedCell(pos) {
     revealCell(translatePosToCoords(pos))
 }
 
-function rightClickedCell(pos) {
-
+function onCellMarked(pos) {
+    var elButton = document.querySelector(`.cell-${pos}`)
+    console.log(elButton)
+    var coords = translatePosToCoords(pos)
+    var currCell = gBoard[coords.i][coords.j]
+    currCell.isMarked = !currCell.isMarked
+    renderCell(coords)
 }
 
 function setGame() {
@@ -59,12 +63,12 @@ function buildBoard() {
 function setBoardNums(){
     for(var i = 0; i < gBoard.length; i++){
         for(var j = 0; j < gBoard.length; j++){
-            gBoard[i][j].minesAroundCount = getNearbyMines({i,j})
+            gBoard[i][j].minesAroundCount = getMinesNegsCount({i,j})
         }
     }
 }
 
-function getNearbyMines(coords){ // get coords
+function getMinesNegsCount(coords){ // get coords
     var neighborsPos = getNearby(coords)
     var counter = 0
     for(var i = 0; i < neighborsPos.length; i++){
@@ -79,11 +83,12 @@ function getNearbyClear(coords){ // get coords
     for(var i = 0; i < neighborsPos.length; i++){
         var currCell = gBoard[neighborsPos[i].i][neighborsPos[i].j]
         if(currCell.isRevealed) continue
+        if(currCell.isMine) continue
+        if(currCell.isMarked) continue
         if(currCell.minesAroundCount){
             revealCell(neighborsPos[i])
             continue
         }
-        if(currCell.isMine) continue
         currCell.isRevealed = true
         console.log('reveal '+ neighborsPos[i].i + ',' + neighborsPos[i].j + currCell.isRevealed)
         revealCell(neighborsPos[i])
@@ -120,7 +125,13 @@ function revealCell(coords){ // gets coords
     else{
         currCell.isRevealed = true
     }
+    if(currCell.isMine) reduceLife()
     renderCell(coords)
+}
+
+function reduceLife(){
+    gLife--
+    if(!gLife) onInit(gLevel.size,gLevel.mines)
 }
 
 function getNearby(coords){ // gets coords
@@ -145,7 +156,7 @@ function renderBoard(board) {
             const cell = board[i][j]
             const className = `cell cell-${i * board.length + j}`
             strHTML += `<td class="${className}">
-                            <button class=".btn" onClick="clickedCell(${i * board.length + j})"></button>
+                            <button class=".btn" onClick="onCellClicked(${i * board.length + j})" oncontextmenu="onCellMarked(${i * board.length + j})"></button>
                         </td>`
         }
         strHTML += '</tr>'
@@ -156,9 +167,20 @@ function renderBoard(board) {
 
 function renderCell(coords) { // gets int
     // Select the elCell and set the value
+    var currCell = gBoard[coords.i][coords.j]
     const pos = translateCoordsToPos(coords)
     const elCell = document.querySelector(`.cell-${pos}`)
-    if(!elCell.getElementsByClassName('.btn')[0]) return
+    const elButton = elCell.getElementsByClassName('.btn')[0]
+    if(!elButton) return
+    if(!currCell.isRevealed && currCell.isMarked){
+        elButton.style.backgroundImage = "url('img/myFlag.png')"
+        elButton.style.backgroundSize = 'cover'
+        return
+    }
+    if(!currCell.isRevealed && !currCell.isMarked){
+        elButton.style.backgroundImage = 'none'
+        return
+    }
     elCell.getElementsByClassName('.btn')[0].remove()
     const newElement = document.createElement('innerCell');
     newElement.innerHTML = findNewInnerHtml(coords)
