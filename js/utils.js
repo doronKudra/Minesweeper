@@ -44,11 +44,11 @@ function getRandomColor() {
     return color
 }
 
-function isInRange(coord) {
+function isInRange(coord,size) {
     if (coord.i < 0) return false
-    if (coord.j > COLS-1) return false
+    if (coord.j >= size) return false
     if (coord.j < 0) return false
-    if (coord.i > ROWS-1) return false
+    if (coord.i >= size) return false
     return true
 }
 
