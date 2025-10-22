@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title class="difficulty-title">Mine Sweeper!</title>
+    <link rel="stylesheet" href="css/styles.css">
+    </link>
+</head>
+
+<body onload="onInit()">
+    <div class="frame">
+        <h1>MINE SWEEPER</h1>
+        <div class="header-bar">
+            <div class="pause-menu-container">
+                <button class="pause-menu">MENU</button>
+            </div>
+        </div>
+        <table class="game-board">
+
+        </table>
+        <div class="footer-bar">
+            <button class="difficulty-btn" onclick="">4x4</button>
+            <button class="difficulty-btn" onclick="">8x8</button>
+            <button class="difficulty-btn" onclick="">12x12</button>
+            <button class="difficulty-btn" onclick="">Custom</button>
+        </div>
+    </div>
+    <script src="js/game.js"></script>
+    <script src="js/utils.js"></script>
+</body>
+
+</html>

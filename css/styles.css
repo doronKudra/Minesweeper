@@ -1,0 +1,98 @@
+body{
+    font-family: cursive;
+    background-color: black;
+    display: grid;
+    place-content: center;
+    text-align: center;
+    color: greenyellow;
+    color: transparent;
+    min-height: 20vh;   
+    -webkit-text-stroke-width: 2px;
+    -webkit-text-stroke-color: black;
+}
+
+.header-bar{
+    width: 100%;
+}
+
+.cell button{
+    display: block; /* Makes the button a block-level element */
+    width: 100%; /* Makes the button take up 100% of the parent's width */
+    height: 100%;
+    box-sizing: border-box; /* Includes padding and border in the element's total width */
+    padding: 50% 50%;
+    background-color: #007bff;
+    color: white;
+    border: none;
+    cursor: pointer;
+    outline: 1px solid rgb(0, 0, 0);
+}
+
+.pause-menu-container{
+    height: 5vh;
+    align-items: center; /* Centers vertically */
+    justify-content: center; /* Centers horizontally */
+}
+
+.pause-menu{
+    display: flex;
+    float: right;
+}
+
+.frame{
+    justify-content: center; /* Centers horizontally */
+    margin-top: 2vh;
+    width: min(50vh,90vw);
+    height: 90vh;
+    outline: 2px solid blue;
+    background-color: darkgray;
+    border-radius: 1%;
+    padding: 1vh;
+    box-shadow: 0 0 10px #00F, /* First shadow for a tighter glow */
+              0 0 20px #00F, /* Second shadow for a wider glow */
+              0 0 30px #00F; /* Third shadow for an even wider glow */
+}
+
+button{
+    -webkit-text-stroke-width: 1px;
+    -webkit-text-stroke-color: blue;
+    padding: 1vw;
+}
+
+.difficulty-btn{    
+    font-size: max(min(3vw,2vh),8px);
+    width: 20%;
+    height: 100%;
+    text-wrap: balance;
+}
+
+.footer-bar{
+    align-content: start;
+    align-items: center;
+}
+
+.game-board{
+    padding-top: 2vh;
+    padding-bottom: 2vh;
+    border-spacing: 0;
+    justify-content: center;
+    position: relative;
+    border-spacing: 0;
+    width: 100%;
+    aspect-ratio: 1 / 1;
+}
+
+tbody{
+    max-width: 100%;
+    max-height: 100%;
+    width: 100%;
+    height: 100%;
+}
+
+td,th,tr{
+    max-width: 100%;
+    max-height: 100%;
+    margin: 0;
+    padding: 0;
+    font-size: 20px;
+}
