@@ -24,7 +24,18 @@ body{
     background-color: #007bff;
     color: white;
     border: none;
-    cursor: pointer;
+    outline: 1px solid rgb(0, 0, 0);
+}
+
+.cell innerCell{
+    display: block; /* Makes the button a block-level element */
+    width: 100%; /* Makes the button take up 100% of the parent's width */
+    height: 100%;
+    box-sizing: border-box; /* Includes padding and border in the element's total width */
+    padding: 50% 50%;
+    background-color: #c9e3ff;
+    color: white;
+    border: none;
     outline: 1px solid rgb(0, 0, 0);
 }
 
@@ -57,6 +68,7 @@ button{
     -webkit-text-stroke-width: 1px;
     -webkit-text-stroke-color: blue;
     padding: 1vw;
+    cursor: pointer;
 }
 
 .difficulty-btn{    
@@ -77,6 +89,7 @@ button{
     border-spacing: 0;
     justify-content: center;
     position: relative;
+    table-layout: fixed;
     border-spacing: 0;
     width: 100%;
     aspect-ratio: 1 / 1;
@@ -95,4 +108,5 @@ td,th,tr{
     margin: 0;
     padding: 0;
     font-size: 20px;
+    line-height: 0px;
 }

@@ -3,13 +3,14 @@
 var gLevel
 var gBoard = []
 var gEmptyCoords
-var isFirstMove = true
+var isFirstMove
 var gGame
 
 
-function onInit() {
+function onInit(size,mines) {
+    isFirstMove = true
     setGame()
-    setLevel(4, 2)
+    setLevel(size, mines)
     gBoard = buildBoard()
     setEmptyCoords(gBoard)
     renderBoard(gBoard)
@@ -90,25 +91,9 @@ function renderBoard(board) {
             const cell = board[i][j]
             const className = `cell cell-${i * board.length + j}`
             if(cell.isMine) return
-            if(!cell.isRevealed){ // cell is revealed with no mines around
-                if(!cell.minesAroundCount){
-                    strHTML += `<td class="${className}">
-                                    <button onClick="clickedCell(${i * board.length + j})"></button>
-                                </td>`
-                }
-                else{
-                    strHTML +=  `<td class="${className}">
-                                    <button onClick="clickedCell(${i * board.length + j})"></button>
-                                    <span>${cell.minesAroundCount}</span>
-                                </td>`
-                }
-
-            }
-            else{
-                strHTML += `<td class="${className}">
-                                <span>${cell.minesAroundCount}</span>
-                            </td>`
-            }
+            strHTML += `<td class="${className}">
+                            <button class=".btn" onClick="clickedCell(${i * board.length + j})"></button>
+                        </td>`
         }
         strHTML += '</tr>'
     }
@@ -118,8 +103,19 @@ function renderBoard(board) {
 
 function renderCell(pos) {
     // Select the elCell and set the value
-    const elButton = document.querySelector(`.cell-${pos} button`)
-    elButton.remove()
+    const coords = translatePos(pos)
+    const elCell = document.querySelector(`.cell-${pos}`)
+    elCell.getElementsByClassName('.btn')[0].remove()
+    const newElement = document.createElement('innerCell');
+    newElement.innerHTML = findInner(coords)
+    elCell.appendChild(newElement)
+}
+
+function findInner(coords){
+    var currCell = gBoard[coords.i][coords.j]
+    if(currCell.isMine) return `<span>*</span>`
+    if(!currCell.minesAroundCount) return `<span></span>`
+    return `<span>${currCell.minesAroundCount}</span>`
 }
 
 function translatePos(pos) { // from obj to int and int to obj

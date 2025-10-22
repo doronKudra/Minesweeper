@@ -10,7 +10,7 @@
     </link>
 </head>
 
-<body onload="onInit()">
+<body onload="onInit(4,2)">
     <div class="frame">
         <h1>MINE SWEEPER</h1>
         <div class="header-bar">
@@ -22,10 +22,10 @@
 
         </table>
         <div class="footer-bar">
-            <button class="difficulty-btn" onclick="">4x4</button>
-            <button class="difficulty-btn" onclick="">8x8</button>
-            <button class="difficulty-btn" onclick="">12x12</button>
-            <button class="difficulty-btn" onclick="">Custom</button>
+            <button class="difficulty-btn" onclick="onInit(4,2)">4x4</button>
+            <button class="difficulty-btn" onclick="onInit(8,14)">8x8</button>
+            <button class="difficulty-btn" onclick="onInit(12,32)">12x12</button>
+            <button class="difficulty-btn" onclick="onInit(prompt('Enter size:'),prompt('Enter mines:'))">Custom</button>
         </div>
     </div>
     <script src="js/game.js"></script>
