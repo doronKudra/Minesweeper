@@ -16,7 +16,7 @@ body{
 }
 
 .header-bar{
-    width: 100%;
+    width: 50%;
 }
 
 .cell button{
@@ -50,12 +50,12 @@ innerCell:has(> .mine) {
     background-color: red;
 }
 
+.header-bar{
+    width: 90%;
+}
+
 .smiley-container{
-    margin-right: 5%;
-    display: flex;
-    float: right;
-    margin-top: 20%;
-    margin-bottom: 20%;
+    margin-left: 5%;
 }
 
 .hearts{
@@ -73,7 +73,17 @@ innerCell:has(> .mine) {
     -webkit-text-stroke-width: 0;
 }
 
-.hint-btn,.smiley{
+.smiley{
+    padding: 0;
+    background-color: transparent;
+    outline: none;
+    border: none;
+    font-size: 300%;
+    display: flex;
+    float: right;
+}
+
+.hint-btn{
     padding: 0;
     background-color: transparent;
     outline: none;

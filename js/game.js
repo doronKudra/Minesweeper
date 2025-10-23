@@ -8,10 +8,13 @@ var gGame
 var gLife
 var gTimerInterval
 var gEmptyCounter
+var gMineTimeout
 
 function onInit(size,mines) {
     gEmptyCounter = 0
     const elLivesUI = document.querySelector('.lives')
+    const elSmiley = document.querySelector('.smiley')
+    elSmiley.innerText = '😄'
     elLivesUI.innerText = '❤️❤️❤️'
     clearInterval(gTimerInterval)
     if(isNaN(size) || isNaN(mines)) return
@@ -67,6 +70,7 @@ function countTime(){
 
 function onLoseGame(){ // show all remaining mines and dont allow clicking other cells
     gGame.isOn = false
+    clearTimeout(gMineTimeout)
     for(var i = 0; i < gBoard.length; i++){
         for(var j = 0; j < gBoard[0].length; j++){
             var currCell = gBoard[i][j]
@@ -81,15 +85,18 @@ function onLoseGame(){ // show all remaining mines and dont allow clicking other
             elButton.style.cursor = 'not-allowed'
         }
     }
+    const elSmiley = document.querySelector('.smiley')
+    elSmiley.innerText = '😵'
 }
 
-function reduceEmpty(){
+function checkWin(){
     if(!gEmptyCounter) onWinGame()
     gEmptyCounter--
 }
 
 function onWinGame(){
     gGame.isOn = false
+    clearTimeout(gMineTimeout)
     for(var i = 0; i < gBoard.length; i++){
         for(var j = 0; j < gBoard[0].length; j++){
             var currCell = gBoard[i][j]
@@ -102,6 +109,8 @@ function onWinGame(){
             elButton.style.cursor = 'not-allowed'
         }
     }
+    const elSmiley = document.querySelector('.smiley')
+    elSmiley.innerText = '😎'
 }
 
 function setLevel(size, mines) {
@@ -137,7 +146,7 @@ function getMinesNegsCount(coords){ // get coords
     return counter
 }
 
-function getNearbyClear(coords){ // get coords
+function expandReveal(coords){ // get coords
     var neighborsPos = getNearby(coords)
     for(var i = 0; i < neighborsPos.length; i++){
         var currCell = gBoard[neighborsPos[i].i][neighborsPos[i].j]
@@ -149,7 +158,7 @@ function getNearbyClear(coords){ // get coords
             continue
         }
         revealCell(neighborsPos[i])
-        getNearbyClear(neighborsPos[i])
+        expandReveal(neighborsPos[i])
     }
 }
 
@@ -178,32 +187,39 @@ function revealCell(coords){ // gets coords
     var currCell = gBoard[coords.i][coords.j]
     if(currCell.minesAroundCount === 0 && !currCell.isMine ){
         currCell.isRevealed = true
-        reduceEmpty()
-        getNearbyClear(coords)
+        checkWin()
+        expandReveal(coords)
     }
     else{
         currCell.isRevealed = true
-        if(!currCell.isMine) reduceEmpty()
+        if(!currCell.isMine) checkWin()
     }
-    if(currCell.isMine) reduceLife()
     renderCell(coords)
+    if(currCell.isMine && !checkLose()) gMineTimeout = setTimeout(() => {
+        currCell.isRevealed = false
+        renderCell(coords)
+    }, 1000);
+
 }
 
-function reduceLife(){
+function checkLose(){
     const elLivesUI = document.querySelector('.lives')
     gLife--
     switch (gLife){
         case 2:
             elLivesUI.innerText = '❤️❤️💔'
-            break
+            return false
         case 1:
             elLivesUI.innerText = '❤️💔💔'
-            break
+            return false
         case 0:
             elLivesUI.innerText = '💔💔💔'
             onLoseGame()
-            break
+            return true
+        default:
+            return true
         }
+    
 }
 
 function getNearby(coords){ // gets coords
@@ -237,13 +253,25 @@ function renderBoard(board) {
     elContainer.innerHTML = strHTML
 }
 
+function renderButton(){
+
+}
+
 function renderCell(coords) { // gets int
     // Select the elCell and set the value
     var currCell = gBoard[coords.i][coords.j]
     const pos = translateCoordsToPos(coords)
     const elCell = document.querySelector(`.cell-${pos}`)
     const elButton = elCell.getElementsByClassName('.btn')[0]
-    if(!elButton) return
+    if(!elButton){
+        if(!currCell.isMine) return
+        const className = `cell cell-${coords.i * gBoard.length + coords.j}`
+        elCell.innerHTML = `<td class="${className}"> 
+                                <button class=".btn" onClick="onCellClicked(${coords.i * gBoard.length + coords.j})" oncontextmenu="onCellMarked(${coords.i * gBoard.length + coords.j})"></button>
+                            </td>`
+        return
+    }
+
     if(!currCell.isRevealed && currCell.isMarked){
         elButton.style.backgroundImage = "url('img/myFlag.png')"
         elButton.style.backgroundSize = 'cover'
