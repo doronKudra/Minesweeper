@@ -5,18 +5,27 @@
 <head>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title class="difficulty-title">Mine Sweeper!</title>
+    <title>Mine Sweeper!</title>
     <link rel="stylesheet" href="css/styles.css">
     </link>
 </head>
 
 <body onload="onInit(4,2)">
-    
     <div class="frame">
         <h1>MINE SWEEPER</h1>
         <div class="header-bar">
-            <div class="pause-menu-container">
-                <button class="pause-menu">MENU</button>
+            <div class="hearts-container">
+                <p class="hearts">Lives:<span class="lives"></span></p>
+            </div>
+            <div class="hint-container">
+                <p class="hints-text">Hints:
+                    <button class="hint-btn" onclick="getHint()">💡</button>
+                    <button class="hint-btn" onclick="getHint()">💡</button>
+                    <button class="hint-btn" onclick="getHint()">💡</button>
+                </p>
+            </div>
+            <div class=".smiley-container">
+                <button class="smiley" onclick="retryGame()">😵</button>
             </div>
         </div>
         <table class="game-board">
@@ -26,7 +35,7 @@
             <button class="difficulty-btn" onclick="onInit(4,2)">4x4</button>
             <button class="difficulty-btn" onclick="onInit(8,14)">8x8</button>
             <button class="difficulty-btn" onclick="onInit(12,32)">12x12</button>
-            <button class="difficulty-btn" onclick="onInit(prompt('Enter size:'),prompt('Enter mines:'))">Custom</button>
+            <button class="difficulty-btn" onclick="onInit(+prompt('Enter size:'),+prompt('Enter mines:'))">Custom</button>
         </div>
         <div class="footer">
             <p>© Doron Kudra</p>

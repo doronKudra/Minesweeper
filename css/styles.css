@@ -9,6 +9,10 @@ body{
     min-height: 20vh;   
     -webkit-text-stroke-width: 2px;
     -webkit-text-stroke-color: black;
+    user-select: none;
+    -webkit-user-select: none; /* For Safari */
+    -moz-user-select: none;    /* For Firefox */
+    -ms-user-select: none;     /* For Internet Explorer/Edge */
 }
 
 .header-bar{
@@ -39,21 +43,54 @@ body{
     outline: 1px solid rgb(0, 0, 0);
     text-align: left;
     overflow: hidden;
+
 }
 
 innerCell:has(> .mine) {
     background-color: red;
 }
 
-.pause-menu-container{
-    height: 5vh;
-    align-items: center; /* Centers vertically */
-    justify-content: center; /* Centers horizontally */
-}
-
-.pause-menu{
+.smiley-container{
+    margin-right: 5%;
     display: flex;
     float: right;
+    margin-top: 20%;
+    margin-bottom: 20%;
+}
+
+.hearts{
+    display: inline-block;
+    text-align: left;
+}
+
+.lives{
+    font-size: 150%;
+}
+
+.hints-text{
+    outline: 0px;
+    color: #00F;
+    -webkit-text-stroke-width: 0;
+}
+
+.hint-btn,.smiley{
+    padding: 0;
+    background-color: transparent;
+    outline: none;
+    border: none;
+    font-size: 150%;
+}
+
+.hearts-container{
+    margin-left: 5%;
+    display: flex;
+    float: left;
+}
+
+.hint-container{
+    margin-left: 5%;
+    display: flex;
+    float: left;
 }
 
 .frame{

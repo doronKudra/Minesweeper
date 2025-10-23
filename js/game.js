@@ -6,8 +6,15 @@ var gEmptyCoords
 var isFirstMove
 var gGame
 var gLife
+var gTimerInterval
+var gEmptyCounter
 
 function onInit(size,mines) {
+    gEmptyCounter = 0
+    const elLivesUI = document.querySelector('.lives')
+    elLivesUI.innerText = '❤️❤️❤️'
+    clearInterval(gTimerInterval)
+    if(isNaN(size) || isNaN(mines)) return
     gLife = 3
     isFirstMove = true
     setGame()
@@ -17,18 +24,27 @@ function onInit(size,mines) {
     renderBoard(gBoard)
 }
 
+function retryGame(){
+    onInit(gLevel.size,gLevel.mines)
+}
+
+function getHint(){
+
+}
+
 function onCellClicked(pos) {
     if (isFirstMove) {
         setMines(pos)
-        isFirstMove = false
         setBoardNums()
+        gGame.isOn = true
+        gTimerInterval = setInterval(countTime,1000)
+        isFirstMove = false
     }
     revealCell(translatePosToCoords(pos))
 }
 
 function onCellMarked(pos) {
-    var elButton = document.querySelector(`.cell-${pos}`)
-    console.log(elButton)
+    var elCell = document.querySelector(`.cell-${pos}`)
     var coords = translatePosToCoords(pos)
     var currCell = gBoard[coords.i][coords.j]
     currCell.isMarked = !currCell.isMarked
@@ -36,7 +52,7 @@ function onCellMarked(pos) {
 }
 
 function setGame() {
-    return {
+    gGame = {
         isOn: false,
         revealedCount: 0,
         markedCount: 0,
@@ -44,6 +60,49 @@ function setGame() {
     }
 }
 
+function countTime(){
+    gGame.isOn ? gGame.secsPassed++ : clearInterval(gTimerInterval)
+    console.log('timer at '+gGame.secsPassed)
+}
+
+function onLoseGame(){ // show all remaining mines and dont allow clicking other cells
+    gGame.isOn = false
+    for(var i = 0; i < gBoard.length; i++){
+        for(var j = 0; j < gBoard[0].length; j++){
+            var currCell = gBoard[i][j]
+            if(currCell.isRevealed) continue
+            if(currCell.isMine && !currCell.isMarked){
+                revealCell({i,j})
+                continue
+            }
+            const elCell = document.querySelector(`.cell-${translateCoordsToPos({i,j})}`)
+            const elButton = elCell.getElementsByClassName('.btn')[0]
+            elButton.style.pointerEvents = 'none'
+            elButton.style.cursor = 'not-allowed'
+        }
+    }
+}
+
+function reduceEmpty(){
+    if(!gEmptyCounter) onWinGame()
+    gEmptyCounter--
+}
+
+function onWinGame(){
+    gGame.isOn = false
+    for(var i = 0; i < gBoard.length; i++){
+        for(var j = 0; j < gBoard[0].length; j++){
+            var currCell = gBoard[i][j]
+            if(currCell.isRevealed || !currCell.isMine) continue // get only unmarked mines that are not revealed
+            currCell.isMarked = true
+            renderCell({i,j})
+            const elCell = document.querySelector(`.cell-${translateCoordsToPos({i,j})}`)
+            const elButton = elCell.getElementsByClassName('.btn')[0]
+            elButton.style.pointerEvents = 'none'
+            elButton.style.cursor = 'not-allowed'
+        }
+    }
+}
 
 function setLevel(size, mines) {
     gLevel = { size, mines }
@@ -89,8 +148,6 @@ function getNearbyClear(coords){ // get coords
             revealCell(neighborsPos[i])
             continue
         }
-        currCell.isRevealed = true
-        console.log('reveal '+ neighborsPos[i].i + ',' + neighborsPos[i].j + currCell.isRevealed)
         revealCell(neighborsPos[i])
         getNearbyClear(neighborsPos[i])
     }
@@ -98,8 +155,8 @@ function getNearbyClear(coords){ // get coords
 
 function setEmptyCoords(board) {
     gEmptyCoords = {}
-    for (var i = 0; i < board.length * board.length; i++) { // 16
-        gEmptyCoords[i] = { i: parseInt(i / board.length), j: i % board.length } // 0,1,2,3  4,5,6,7  8,9,10,11
+    for (var i = 0; i < board.length * board.length; i++) { // 16 64 144
+        gEmptyCoords[i] = { i: parseInt(i / board.length), j: i % board.length }
     }
 }
 
@@ -114,24 +171,39 @@ function setMines(firstClickPos) {
         gBoard[randCoords.i][randCoords.j].isMine = true
         delete gEmptyCoords[randKey]
     }
+    gEmptyCounter = Object.keys(gEmptyCoords).length
 }
 
 function revealCell(coords){ // gets coords
     var currCell = gBoard[coords.i][coords.j]
-    if(currCell.minesAroundCount === 0 && !currCell.isMine && !currCell.isRevealed){
+    if(currCell.minesAroundCount === 0 && !currCell.isMine ){
         currCell.isRevealed = true
+        reduceEmpty()
         getNearbyClear(coords)
     }
     else{
         currCell.isRevealed = true
+        if(!currCell.isMine) reduceEmpty()
     }
     if(currCell.isMine) reduceLife()
     renderCell(coords)
 }
 
 function reduceLife(){
+    const elLivesUI = document.querySelector('.lives')
     gLife--
-    if(!gLife) onInit(gLevel.size,gLevel.mines)
+    switch (gLife){
+        case 2:
+            elLivesUI.innerText = '❤️❤️💔'
+            break
+        case 1:
+            elLivesUI.innerText = '❤️💔💔'
+            break
+        case 0:
+            elLivesUI.innerText = '💔💔💔'
+            onLoseGame()
+            break
+        }
 }
 
 function getNearby(coords){ // gets coords
