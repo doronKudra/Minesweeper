@@ -1,0 +1,196 @@
+body{
+    filter: brightness(100%);
+    font-family: cursive;
+    background-color: black;
+    display: grid;
+    place-content: center;
+    text-align: center;
+    color: greenyellow;
+    color: transparent;
+    min-height: 20vh;
+    -webkit-text-stroke-width: 2px;
+    -webkit-text-stroke-color: black;
+    user-select: none;
+    -webkit-user-select: none; /* For Safari */
+    -moz-user-select: none;    /* For Firefox */
+    -ms-user-select: none;     /* For Internet Explorer/Edge */
+}
+
+h1{
+    font-size: 5vh;
+    margin: 0;
+}
+
+.header-bar{
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr 1fr;
+    width: 50%;
+    place-items: center;
+}
+.smaller-btn{
+    padding: 5px;
+    margin: 5px;
+}
+.cell button{
+    display: block; /* Makes the button a block-level element */
+    width: 100%; /* Makes the button take up 100% of the parent's width */
+    height: 100%;
+    box-sizing: border-box; /* Includes padding and border in the element's total width */
+    padding: 50% 50%;
+    background-color: #007bff;
+    color: white;
+    border: none;
+    outline: 1px solid rgb(0, 0, 0);
+}
+
+.cell innerCell{
+    display: block; /* Makes the button a block-level element */
+    width: 100%; /* Makes the button take up 100% of the parent's width */
+    height: 100%;
+    box-sizing: border-box; /* Includes padding and border in the element's total width */
+    padding: 50% 45%;
+    background-color: #c9e3ff;
+    color: white;
+    border: none;
+    outline: 1px solid rgb(0, 0, 0);
+    text-align: left;
+    overflow: hidden;
+
+}
+
+innerCell:has(> .mine) {
+    background-color: red;
+}
+
+.header-bar{
+    width: 90%;
+}
+
+.smiley-container{
+    margin-left: 5%;
+    display: flex;
+    float: right;
+}
+
+.hearts{
+    display: inline-block;
+    text-align: left;
+}
+
+.lives{
+    font-size: max(1.5vh,10px);
+}
+
+.hints-text{
+    text-align: left;
+    outline: 0px;
+    color: #00F;
+    -webkit-text-stroke-width: 0;
+}
+
+.smiley{
+    padding: 0px;
+    padding-right: 5px;
+    padding-left: 5px;
+    background-color: transparent;
+    text-align: right;
+    outline: none;
+    border: none;
+    font-size: max(4vh,15px);
+}
+
+.hint-btn{
+    padding: 0;
+    background-color: transparent;
+    outline: none;
+    border: none;
+    font-size: max(1.5vh,10px);;
+}
+
+.container{
+    margin-left: 5%;
+    display: flex;
+    float: left;
+}
+
+.frame{
+    justify-content: center; /* Centers horizontally */
+    margin-top: 2vh;
+    width: min(50vh,90vw);
+    height: 90vh;
+    outline: 2px solid blue;
+    background-color: darkgray;
+    border-radius: 1%;
+    padding: 1vh;
+    box-shadow: 0 0 10px #00F, /* First shadow for a tighter glow */
+              0 0 20px #00F, /* Second shadow for a wider glow */
+              0 0 30px #00F; /* Third shadow for an even wider glow */
+}
+
+button{
+    -webkit-text-stroke-width: 1px;
+    -webkit-text-stroke-color: blue;
+    padding: 1vw;
+    cursor: pointer;
+}
+
+.difficulty-btn{    
+    font-size: max(min(3vw,2vh),8px);
+    width: 20%;
+    height: 100%;
+    text-wrap: balance;
+}
+
+.diff-bar{
+    align-content: start;
+    align-items: center;
+}
+
+.game-board{
+    padding-top: 2vh;
+    padding-bottom: 2vh;
+    border-spacing: 0;
+    justify-content: center;
+    position: relative;
+    table-layout: fixed;
+    border-spacing: 0;
+    width: 100%;
+    aspect-ratio: 1 / 1;
+}
+
+tbody{
+    max-width: 100%;
+    max-height: 100%;
+    width: 100%;
+    height: 100%;
+}
+
+td,th,tr{
+    max-width: 100%;
+    max-height: 100%;
+    margin: 0;
+    padding: 0;
+    font-size: 20px;
+    line-height: 0px;
+}
+
+
+.footer{
+    margin-top: 5%;
+}
+
+p{
+    color:#00F;
+    font-size: min(20vw,15px);
+    -webkit-text-stroke-width: 0px;
+}
+
+img{
+    object-fit: fill;
+    max-width: 100%; /* Ensures the image doesn't exceed the cell's width */
+    height: auto;    /* Maintains the aspect ratio */
+    display: block;  /* Removes extra space below the image */
+    height: 100%;
+    background-position : center;
+    background-attachment : fixed;
+}
