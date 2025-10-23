@@ -1,4 +1,5 @@
 body{
+    filter: brightness(100%);
     font-family: cursive;
     background-color: black;
     display: grid;
@@ -6,7 +7,7 @@ body{
     text-align: center;
     color: greenyellow;
     color: transparent;
-    min-height: 20vh;   
+    min-height: 20vh;
     -webkit-text-stroke-width: 2px;
     -webkit-text-stroke-color: black;
     user-select: none;
@@ -15,10 +16,21 @@ body{
     -ms-user-select: none;     /* For Internet Explorer/Edge */
 }
 
-.header-bar{
-    width: 50%;
+h1{
+    font-size: 5vh;
+    margin: 0;
 }
 
+.header-bar{
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr 1fr;
+    width: 50%;
+    place-items: center;
+}
+.smaller-btn{
+    padding: 5px;
+    margin: 5px;
+}
 .cell button{
     display: block; /* Makes the button a block-level element */
     width: 100%; /* Makes the button take up 100% of the parent's width */
@@ -56,6 +68,8 @@ innerCell:has(> .mine) {
 
 .smiley-container{
     margin-left: 5%;
+    display: flex;
+    float: right;
 }
 
 .hearts{
@@ -64,23 +78,25 @@ innerCell:has(> .mine) {
 }
 
 .lives{
-    font-size: 150%;
+    font-size: max(1.5vh,10px);
 }
 
 .hints-text{
+    text-align: left;
     outline: 0px;
     color: #00F;
     -webkit-text-stroke-width: 0;
 }
 
 .smiley{
-    padding: 0;
+    padding: 0px;
+    padding-right: 5px;
+    padding-left: 5px;
     background-color: transparent;
+    text-align: right;
     outline: none;
     border: none;
-    font-size: 300%;
-    display: flex;
-    float: right;
+    font-size: max(4vh,15px);
 }
 
 .hint-btn{
@@ -88,16 +104,10 @@ innerCell:has(> .mine) {
     background-color: transparent;
     outline: none;
     border: none;
-    font-size: 150%;
+    font-size: max(1.5vh,10px);;
 }
 
-.hearts-container{
-    margin-left: 5%;
-    display: flex;
-    float: left;
-}
-
-.hint-container{
+.container{
     margin-left: 5%;
     display: flex;
     float: left;

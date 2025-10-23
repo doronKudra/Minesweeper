@@ -10,32 +10,48 @@
     </link>
 </head>
 
-<body onload="onInit(4,2)">
+<body onload="onInit('Easy',4,2)">
     <div class="frame">
         <h1>MINE SWEEPER</h1>
         <div class="header-bar">
-            <div class="hearts-container">
-                <p class="hearts">Lives:<span class="lives"></span></p>
+            <div class="container hearts-container">
+                <p class="hearts">Lives:<br><span class="lives"></span></p>
             </div>
-            <div class="hint-container">
+            <div class="container hint-container">
                 <p class="hints-text">Hints:
-                    <button class="hint-btn" onclick="getHint()">💡</button>
-                    <button class="hint-btn" onclick="getHint()">💡</button>
-                    <button class="hint-btn" onclick="getHint()">💡</button>
+                    <br>
+                    <button class="hint-btn hint1" onclick="getHint(1)">💡</button>
+                    <button class="hint-btn hint2" onclick="getHint(2)">💡</button>
+                    <button class="hint-btn hint3" onclick="getHint(3)">💡</button>
                 </p>
             </div>
-            <div class=".smiley-container">
+            <div class="container timer-container">
+                <p class="timer-text">Time:<br><span class="timer">0</span></p>
+            </div>
+            <div class="container best-time-container">
+                <p class="timer-text">Best Time:<br><span class="best-time">0</span></p>
+            </div>
+            <div class="container smiley-container">
                 <button class="smiley" onclick="retryGame()"></button>
+            </div>
+            <div class="container safe-click-container">
+                <button class="smaller-btn safe-click-btn" onclick="safeClick()">Safe Click: <span>3</span></button>
+            </div>
+            <div class="container dark-mode-container">
+                <button class="smaller-btn dark-mode-btn" onclick="toggleDarkMode()">Dark Mode</button>
+            </div>
+            <div class="container undo-container">
+                <button class="smaller-btn undo-btn" onclick="undoLast()">Undo</button>
             </div>
         </div>
         <table class="game-board">
 
         </table>
         <div class="diff-bar">
-            <button class="difficulty-btn" onclick="onInit(4,2)">4x4</button>
-            <button class="difficulty-btn" onclick="onInit(8,14)">8x8</button>
-            <button class="difficulty-btn" onclick="onInit(12,32)">12x12</button>
-            <button class="difficulty-btn" onclick="onInit(+prompt('Enter size:'),+prompt('Enter mines:'))">Custom</button>
+            <button class="difficulty-btn" onclick="onInit('Easy',4,2)">4x4</button>
+            <button class="difficulty-btn" onclick="onInit('Medium',8,14)">8x8</button>
+            <button class="difficulty-btn" onclick="onInit('Hard',12,32)">12x12</button>
+            <button class="difficulty-btn" onclick="onInit('Custom',+prompt('Enter size:'),+prompt('Enter mines:'))">Custom</button>
         </div>
         <div class="footer">
             <p>© Doron Kudra</p>

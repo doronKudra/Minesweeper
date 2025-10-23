@@ -9,33 +9,97 @@ var gLife
 var gTimerInterval
 var gEmptyCounter
 var gMineTimeout
+var gHintTimeout
+var gLastHint = 1
+var gSafeClickTimeout
+var gSafeClicks
+var isDark = false
+var gUndo = []
+var gLifeAt = []
 
-function onInit(size,mines) {
+function onInit(diff,size,mines) {
+    switch(diff){
+        case 'Easy':
+            size = 4
+            mines = 2
+            break
+        case 'Medium':
+            size = 8
+            mines = 14
+            break
+        case 'Hard':
+            size = 12
+            mines = 32
+            break
+        default:
+            break
+        
+    }
+    getBestTime(diff)
+    gSafeClicks = 3
     gEmptyCounter = 0
+    gUndo = []
+    const elTimer = document.querySelector('.timer')
     const elLivesUI = document.querySelector('.lives')
     const elSmiley = document.querySelector('.smiley')
+    const elHints = document.querySelector('.hints-text')
+    const elSafeClickText = document.querySelector(`.safe-click-btn span`)
+    elHints.innerHTML = `Hints:
+                    <br>
+                    <button class="hint-btn hint1" onclick="getHint(1)">💡</button>
+                    <button class="hint-btn hint2" onclick="getHint(2)">💡</button>
+                    <button class="hint-btn hint3" onclick="getHint(3)">💡</button>`
+    elSafeClickText.innerText = '3'
     elSmiley.innerText = '😄'
     elLivesUI.innerText = '❤️❤️❤️'
+    elTimer.innerText = '0'
     clearInterval(gTimerInterval)
+    clearTimeout(gHintTimeout)
+    clearTimeout(gMineTimeout)
+    clearTimeout(gSafeClickTimeout)
     if(isNaN(size) || isNaN(mines)) return
     gLife = 3
     isFirstMove = true
     setGame()
-    setLevel(size, mines)
+    setLevel(diff ,size, mines)
     gBoard = buildBoard()
     setEmptyCoords(gBoard)
     renderBoard(gBoard)
 }
 
-function retryGame(){
-    onInit(gLevel.size,gLevel.mines)
+function getBestTime(diff){ 
+    var bestTime = localStorage.getItem(diff);
+    const elBestTime = document.querySelector('.best-time')
+    elBestTime.innerText = bestTime
 }
 
-function getHint(){
+function checkTopTime(diff){
+    var bestTime = localStorage.getItem(diff);
+    if(!bestTime && bestTime !== 0 || gGame.secsPassed < bestTime) {
+        localStorage.setItem(diff,gGame.secsPassed)
+        console.log('NEW RECORD!')
+    }
+}
 
+function retryGame(){
+    onInit(gLevel.diff,gLevel.size,gLevel.mines)
+}
+
+function getHint(idHint){
+    if(gGame.isHint){
+        gGame.isHint = false
+        const elHint = document.querySelector(`.hint${gLastHint}`)
+        elHint.style.backgroundColor = 'transparent'
+        return
+    }
+    gLastHint = idHint
+    gGame.isHint = true
+    const elHint = document.querySelector(`.hint${idHint}`)
+    elHint.style.backgroundColor = 'yellow'
 }
 
 function onCellClicked(pos) {
+    var coords = translatePosToCoords(pos)
     if (isFirstMove) {
         setMines(pos)
         setBoardNums()
@@ -43,7 +107,82 @@ function onCellClicked(pos) {
         gTimerInterval = setInterval(countTime,1000)
         isFirstMove = false
     }
-    revealCell(translatePosToCoords(pos))
+    if(gGame.isHint){
+        var hintRange = getNearby(coords)
+        hintRange.push(coords)
+        for(var i = 0; i < hintRange.length; i++){
+            var currCell = gBoard[hintRange[i].i][hintRange[i].j]
+            if(!currCell.isRevealed){
+                currCell.isRevealed = true
+                renderCell(hintRange[i])
+            }
+            else{       
+                hintRange.splice(i,1)
+                i--
+            }
+        }
+        gGame.isHint = false
+        removeHint()
+        gHintTimeout = setTimeout(() => {
+            for(var i = 0; i < hintRange.length;i++){
+                var currCell = gBoard[hintRange[i].i][hintRange[i].j]
+                currCell.isRevealed = false
+                renderButton(translateCoordsToPos(hintRange[i]))
+            }
+        }, 1500);
+        return
+    }
+    
+    gUndo.push([])
+    gLifeAt[gGame.turn] = gLife
+    revealCell(coords)
+    gGame.turn++
+    
+}
+
+function safeClick(){
+    if(!gSafeClicks) return
+    if(!gGame.isOn) return
+    gSafeClicks--
+    var keys = Object.keys(gEmptyCoords)
+    if (keys.length === 0) return
+    var randKey = keys[getRandomInt(0, keys.length)]
+    const elSafeClickText = document.querySelector(`.safe-click-btn span`)
+    const elButton = document.querySelector(`.cell-${randKey} button`)
+    elSafeClickText.innerText = ''+gSafeClicks
+    elButton.style.backgroundColor = 'yellow'
+    gSafeClickTimeout = setTimeout(() => {
+        elButton.style.backgroundColor = '#007bff'
+    }, 1500);
+}
+
+function toggleDarkMode(){
+    isDark = !isDark
+    const elBody = document.querySelector('body')
+    const elDarkMode = document.querySelector('.dark-mode-btn')
+    elDarkMode.innerText = isDark ? 'Light Mode' : 'Dark Mode'
+    elBody.style.filter = isDark ? 'brightness(50%)' : 'brightness(100%)'
+}
+
+function undoLast(){
+    if(!gGame.turn) return
+    if(!gGame.isOn) return
+    gGame.turn-- // go back a turn
+    for(var i = 0; i < gUndo[gGame.turn].length; i++){
+        var pos = gUndo[gGame.turn][i]
+        var coords = translatePosToCoords(pos)
+        var currCell = gBoard[coords.i][coords.j]
+        if(!currCell.isMine){
+            currCell.isRevealed = false
+            if(!(pos in gEmptyCoords)) gEmptyCounter++
+            gEmptyCoords[pos] = coords
+            renderButton(pos)
+        }
+        if(currCell.isMine && gLife < 3){
+            gLife++
+            updateLives()
+        }
+    }
 }
 
 function onCellMarked(pos) {
@@ -59,18 +198,27 @@ function setGame() {
         isOn: false,
         revealedCount: 0,
         markedCount: 0,
-        secsPassed: 0
+        secsPassed: 0,
+        isHint: false,
+        turn: 0,
     }
+}
+
+function removeHint(){
+    const elHint = document.querySelector(`.hint${gLastHint}`)
+    elHint.remove()
 }
 
 function countTime(){
     gGame.isOn ? gGame.secsPassed++ : clearInterval(gTimerInterval)
-    console.log('timer at '+gGame.secsPassed)
+    const elTimer = document.querySelector('.timer')
+    elTimer.innerText = ''+gGame.secsPassed
 }
 
 function onLoseGame(){ // show all remaining mines and dont allow clicking other cells
     gGame.isOn = false
     clearTimeout(gMineTimeout)
+    clearTimeout(gHintTimeout)
     for(var i = 0; i < gBoard.length; i++){
         for(var j = 0; j < gBoard[0].length; j++){
             var currCell = gBoard[i][j]
@@ -97,6 +245,8 @@ function checkWin(){
 function onWinGame(){
     gGame.isOn = false
     clearTimeout(gMineTimeout)
+    clearTimeout(gHintTimeout)
+    checkTopTime(gLevel.diff)
     for(var i = 0; i < gBoard.length; i++){
         for(var j = 0; j < gBoard[0].length; j++){
             var currCell = gBoard[i][j]
@@ -113,8 +263,8 @@ function onWinGame(){
     elSmiley.innerText = '😎'
 }
 
-function setLevel(size, mines) {
-    gLevel = { size, mines }
+function setLevel(diff ,size, mines) {
+    gLevel = {diff ,size, mines }
 }
 
 function buildBoard() {
@@ -185,6 +335,7 @@ function setMines(firstClickPos) {
 
 function revealCell(coords){ // gets coords
     var currCell = gBoard[coords.i][coords.j]
+    delete gEmptyCoords[translateCoordsToPos(coords)]
     if(currCell.minesAroundCount === 0 && !currCell.isMine ){
         currCell.isRevealed = true
         checkWin()
@@ -199,13 +350,22 @@ function revealCell(coords){ // gets coords
         currCell.isRevealed = false
         renderCell(coords)
     }, 1000);
-
+    var undoPos = gUndo[gGame.turn]
+    undoPos.push(translateCoordsToPos(coords))
+    
 }
 
 function checkLose(){
-    const elLivesUI = document.querySelector('.lives')
     gLife--
+    return updateLives()
+}
+
+function updateLives(){
+    const elLivesUI = document.querySelector('.lives')
     switch (gLife){
+        case 3:
+            elLivesUI.innerText = '❤️❤️❤️'
+            return false
         case 2:
             elLivesUI.innerText = '❤️❤️💔'
             return false
@@ -219,7 +379,6 @@ function checkLose(){
         default:
             return true
         }
-    
 }
 
 function getNearby(coords){ // gets coords
@@ -253,25 +412,26 @@ function renderBoard(board) {
     elContainer.innerHTML = strHTML
 }
 
-function renderButton(){
-
+function renderButton(pos){
+    var coords = translatePosToCoords(pos)
+    const elCell = document.querySelector(`.cell-${pos}`)
+    const className = `cell cell-${coords.i * gBoard.length + coords.j}`
+    elCell.innerHTML = `<td class="${className}"> 
+                            <button class=".btn" onClick="onCellClicked(${coords.i * gBoard.length + coords.j})" oncontextmenu="onCellMarked(${coords.i * gBoard.length + coords.j})"></button>
+                        </td>`
 }
 
 function renderCell(coords) { // gets int
     // Select the elCell and set the value
     var currCell = gBoard[coords.i][coords.j]
-    const pos = translateCoordsToPos(coords)
+    var pos = translateCoordsToPos(coords)
     const elCell = document.querySelector(`.cell-${pos}`)
     const elButton = elCell.getElementsByClassName('.btn')[0]
     if(!elButton){
         if(!currCell.isMine) return
-        const className = `cell cell-${coords.i * gBoard.length + coords.j}`
-        elCell.innerHTML = `<td class="${className}"> 
-                                <button class=".btn" onClick="onCellClicked(${coords.i * gBoard.length + coords.j})" oncontextmenu="onCellMarked(${coords.i * gBoard.length + coords.j})"></button>
-                            </td>`
+            renderButton(pos)
         return
     }
-
     if(!currCell.isRevealed && currCell.isMarked){
         elButton.style.backgroundImage = "url('img/myFlag.png')"
         elButton.style.backgroundSize = 'cover'
